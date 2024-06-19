@@ -1,0 +1,87 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <gsl/gsl_rng.h>
+#include <gsl/gsl_randist.h>
+#include <gsl/gsl_sf_log.h>
+#include "alglib/ap.h"
+#include "alglib/linalg.h"
+#include "alglib/optimization.h"
+
+#define NUM_STATES 10000  // Exemplo de número de estados
+#define NUM_ACTIONS 10000  // Exemplo de número de ações
+#define ALPHA 0.1  // Taxa de aprendizado
+#define GAMMA 0.9  // Fator de desconto
+#define EPSILON 0.1  // Taxa de exploração
+
+float q_table[NUM_STATES][NUM_ACTIONS];  // Q-table
+gsl_rng *rng;  // GSL Random Number Generator
+
+void initialize_q_table() {
+    for (int i = 0; i < NUM_STATES; i++) {
+        for (int j = 0; j < NUM_ACTIONS; j++) {
+            q_table[i][j] = 0.0;
+        }
+    }
+}
+
+int choose_action(int state) {
+    if (gsl_rng_uniform(rng) < EPSILON) {
+        return gsl_rng_uniform_int(rng, NUM_ACTIONS);  // Explorar
+    } else {
+        int best_action = 0;
+        for (int i = 1; i < NUM_ACTIONS; i++) {
+            if (q_table[state][i] > q_table[state][best_action]) {
+                best_action = i;
+            }
+        }
+        return best_action;  // Exploit
+    }
+}
+
+void update_q_table(int state, int action, float reward, int next_state) {
+    float predict = q_table[state][action];
+    float target = reward + GAMMA * q_table[next_state][choose_action(next_state)];
+    q_table[state][action] += ALPHA * (target - predict);
+}
+
+float get_reward(float position) {
+    if (position < 25.0) {
+        return (1.0 / position) * 10.0;  // Recompensa baseada no multiplicador
+    } else {
+        return -10.0;  // Perda
+    }
+}
+
+void train(int episodes) {
+    for (int episode = 0; episode < episodes; episode++) {
+        int state = gsl_rng_uniform_int(rng, NUM_STATES);  // Estado inicial aleatório
+        float total_reward = 0;
+        while (1) {
+            int action = choose_action(state);
+            float position = (float)action / 100.0;  // Convertendo a ação para posição
+            float reward = get_reward(position);
+            int next_state = action;  // Próximo estado é a ação atual
+            update_q_table(state, action, reward, next_state);
+            state = next_state;
+            total_reward += reward;
+            if (reward < 0) {  // Se perder, reinicia o jogo
+                break;
+            }
+        }
+        printf("Episode %d: Total Reward: %f\n", episode + 1, total_reward);
+    }
+}
+
+int main() {
+    // Inicializa a semente do gerador de números aleatórios
+    gsl_rng_env_setup();
+    rng = gsl_rng_alloc(gsl_rng_default);
+    gsl_rng_set(rng, time(NULL));
+
+    initialize_q_table();
+    train(1000);  // Treinar por 1000 episódios
+
+    gsl_rng_free(rng);  // Libera a memória do gerador de números aleatórios
+    return 0;
+}
