@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <unistd.h> // Para sleep em sistemas Unix-like
+#include <unistd.h> // Para sleep em sistemas Unix
 
 #define L 9
 #define C 15
