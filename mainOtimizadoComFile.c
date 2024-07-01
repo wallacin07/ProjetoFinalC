@@ -20,6 +20,15 @@ int pontuation = 0;
 int numEnemies = 5;
 char nickName[20];
 
+//limpa a tela
+void clearWin() {
+#ifdef _WIN32
+    system("cls");
+#else
+    system("clear");
+#endif
+}
+
 struct Character {
     int x;
     int y;
@@ -321,6 +330,8 @@ int main() {
 
     printf("\n\nENTER YOUR NICK NAME: ");
     scanf("%s", nickName);
+
+    clearWin();
 
     character.x = 0;
     character.y = 0;
