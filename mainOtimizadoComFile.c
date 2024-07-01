@@ -4,6 +4,10 @@
 #include <conio.h>
 #include <windows.h>
 #include <string.h>
+#include "fileSort.h"
+#ifndef FILESORT_H
+#define FILESORT_H
+
 
 #define L 9
 #define C 15
@@ -289,25 +293,25 @@ void displayScores() {
         return;
     }
 
-    struct Player *players = NULL;
+    Player *players = NULL;
     int count = 0;
     while (!feof(file)) {
-        players = realloc(players, sizeof(struct Player) * (count + 1));
-        if (fscanf(file, "%s %d", players[count].nickName, &players[count].pontuation) == 2) {
+        players = realloc(players, sizeof(Player) * (count + 1));
+        if (fscanf(file, "%s %d", players[count].playerName, &players[count].playerScore) == 2) {
             count++;
         }
     }
     fclose(file);
 
+    qsort(players, count, sizeof(Player), comparePlayers);
+   
     printf("\nRANKING:\n");
-    for (int i = 0; i < count; i++) {
-        printf("%s: %d\n", players[i].nickName, players[i].pontuation);
-    }
+    displayPlayers(players, count);
 
     free(players);
 }
 
-void saveScore(char* result, char *nickName[20]) {
+void saveScore(char* result, char nickName[20]) {
     // char nickName[15];
     // printf("\n\nEnter your nickname: ");
     // scanf("%s", nickName);
@@ -380,3 +384,4 @@ int main() {
 
     return 0;
 }
+#endif
