@@ -62,8 +62,7 @@ int comparePlayers(const void *a, const void *b) {
 }
 
 void displayPlayers(Player *players, int count) {
-    printf("Players in descending order of score:\n");
     for (int i = 0; i < count; i++) {
-        printf("Name: %s, Score: %d\n", players[i].playerName, players[i].playerScore);
+        printf("NAME: %s, SCORE: %d\n", players[i].playerName, players[i].playerScore);
     }
 }
