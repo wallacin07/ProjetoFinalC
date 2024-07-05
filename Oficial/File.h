@@ -52,7 +52,7 @@ char url[] = "Score.txt";
 f = fopen(url, "r");
 
 if (f == NULL) {
-    printf("Erro ao abrir o arquivo %s.\n", url);
+    printf("arquivo vazio%s.\n", url);
     return;
 }
 
